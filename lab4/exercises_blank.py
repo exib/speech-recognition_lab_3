@@ -150,51 +150,7 @@ def minmax_test(ground_truth_sort, LLR, tar_scores, imp_scores, P_Htar_thr, C00,
     
     ###########################################################
     # Here is your code
-    LLR_len = len(LLR)
-    cost_matrix = np.zeros((LLR_len, len(P_Htar_thr)))
-    thr_matrix = np.zeros((LLR_len, len(P_Htar_thr)))
-    fnr_matrix = np.zeros((LLR_len, len(P_Htar_thr)))
-    fpr_matrix = np.zeros((LLR_len, len(P_Htar_thr)))
-    P_Htars = np.zeros((LLR_len, len(P_Htar_thr)))
-    progress_max = LLR_len*len(P_Htar_thr)
-    progress_step = int(progress_max/10)
-    print(LLR_len, len(P_Htar_thr))
-    progress_ind = 0
-    for LLR_ind, P_Htar_ind in product(range(LLR_len), range(len(P_Htar_thr))):
-        if progress_ind%progress_step == 0:
-            print(f"{int(progress_ind*100/progress_max)}%: {progress_ind}/{progress_max}")
-        solution = LLR > LLR[LLR_ind]
-        
-        t = (solution == ground_truth_sort)
-        f = (solution != ground_truth_sort)
-
-        p_d0h0 = np.sum(t[ground_truth_sort])/len(tar_scores)
-        p_d1h0 = np.sum(f[ground_truth_sort])/len(tar_scores)
-        p_d0h1 = np.sum(f[~ground_truth_sort])/len(imp_scores)
-        p_d1h1 = np.sum(t[~ground_truth_sort])/len(imp_scores)
-
-        p_h0 = P_Htar_thr[P_Htar_ind]
-        p_h1 = 1 - p_h0
-        
-        thr_matrix[LLR_ind, P_Htar_ind] = LLR[LLR_ind]
-        fnr_matrix[LLR_ind, P_Htar_ind] = p_d1h0
-        fpr_matrix[LLR_ind, P_Htar_ind] = p_d0h1
-        cost_matrix[LLR_ind, P_Htar_ind] = C00*p_d0h0*p_h0 + C10*p_d1h0*p_h0 + C01*p_d0h1*p_h1 + C11*p_d1h1*p_h1
-        P_Htars[LLR_ind, P_Htar_ind] = p_h0
-        progress_ind += 1
-    # Min
-    max_cost = np.amin(cost_matrix, axis=0)
-    argmax_ind_list = np.argmin(cost_matrix, axis=0)
-    # Max
-    min_cost = np.amax(max_cost)
-    print(min_cost)
-    ind_1 = np.argmax(max_cost)
-    ind_0 = argmax_ind_list[ind_1]
-    thr = thr_matrix[ind_0, ind_1]
-    fnr = fnr_matrix[ind_0, ind_1]
-    fpr = fpr_matrix[ind_0, ind_1]
-    AC = cost_matrix[ind_0, ind_1]
-    P_Htar = P_Htars[ind_0, ind_1]
+    
     ###########################################################
     
     return thr, fnr, fpr, AC, P_Htar
